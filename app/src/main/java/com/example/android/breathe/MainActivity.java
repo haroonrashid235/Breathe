@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
@@ -45,8 +46,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
 
+        // If Sensor is not found or object is not created
+        if(mSensor == null){
+            Toast.makeText(this,"Error accessing Gyroscope Sensor",Toast.LENGTH_LONG).show();
+        }
+
         // Register a Listener to record sensor values whenever they change
         mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_NORMAL);
+
 
 
         gyroText = (TextView) findViewById(R.id.gyro_text);
