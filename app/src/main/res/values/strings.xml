@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Breathe</string>
+    <string name="record_data">Record Data</string>
 </resources>
