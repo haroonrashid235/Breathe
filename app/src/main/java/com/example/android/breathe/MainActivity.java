@@ -18,12 +18,12 @@ import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.FileOutputStream;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener{
 
     private static final int DATA_SIZE = 101;
+    String filename = "data.txt";
 
     private SensorManager mSensorManager;
     private Sensor mSensor;
@@ -112,6 +112,18 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         double scaled_value = SCALER * sensorEvent.values[0];
         double roundOffX = Math.round(scaled_value * 100.0) / 100.0;
 
+        if(scaled_value < 20 && scaled_value > -20){
+            FileOutputStream outputStream;
+
+            try {
+                outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
+                outputStream.write(String.valueOf(roundOffX).getBytes());
+                outputStream.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
         if( scaled_value < 1.5 && scaled_value > -1.5){
             scaled_value = 0;
         }
@@ -119,9 +131,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         // Update the UI with the results from gyroscope
         gyroText.setText("X :" + sensorEvent.values[0] + "\n\nY : " + sensorEvent.values[1] + "\n\nZ : " + sensorEvent.values[2]);
         if (scaled_value < 20 && scaled_value > -20){
+            Log.d("onSensorChanged",String.valueOf(scaled_value));
+
             data[i] = new DataPoint(i, roundOffX);
             i++;
-            Log.d("onSensorChanged",String.valueOf(scaled_value));
             if(i > data.length - 1){
                 i = 0;
                 for(int j =0 ;j < data.length ; j++){
@@ -129,32 +142,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 }
             }
         }
-
-
-
             // Writing to a file
-
-        FileWriter writer = null;
-        try {
-            writer = new FileWriter("myFile.csv",false);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            writer.append(String.valueOf(roundOffX));
-            writer.append(",");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-
     }
 
     @Override
