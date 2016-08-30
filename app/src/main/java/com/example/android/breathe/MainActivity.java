@@ -23,7 +23,7 @@ import java.io.FileOutputStream;
 public class MainActivity extends AppCompatActivity implements SensorEventListener{
 
     private static final int DATA_SIZE = 101;
-    String filename = "data.txt";
+    String filename = "values.txt";
 
     private SensorManager mSensorManager;
     private Sensor mSensor;
@@ -32,19 +32,22 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     LineGraphSeries<DataPoint> series;
     private DataPoint[] data = new DataPoint[101];
     private int i = 0;
+    private int j = 0;
 
     // Change this value to increase or decrease the sensitivity (This is multiplying factor)
     private static final double SCALER = (180.0/3.14);
+    public static  int aaa = 0;
 
     // Sampling Time
     private static final int SAMPLING_TIME = 150; //milliseconds
 
-
-
+    public boolean recordData = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        recordData = false;
 
         for(int i=0;i<data.length; i++){
             data[i] = new DataPoint(0,0);
@@ -95,41 +98,114 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         };
         handler.post(run);
 
-        Button record_button = (Button) findViewById(R.id.record_data);
+        final TextView displayText = (TextView) findViewById(R.id.display_text);
+
+
+        final Button record_button = (Button) findViewById(R.id.record_data);
         record_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                FileOutputStream outputStream;
 
+                try {
+                    outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
+                    outputStream.write("".getBytes());
+                    outputStream.close();
+                    displayText.setVisibility(View.VISIBLE);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                recordData = true;
+
+            }
+        });
+
+        Button stopButton = (Button) findViewById(R.id.stop_record);
+        stopButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                recordData = false;
+                displayText.setVisibility(View.INVISIBLE);
             }
         });
     }
 
 
-
     @Override
     public void onSensorChanged(final SensorEvent sensorEvent) {
+
+
 
         double scaled_value = SCALER * sensorEvent.values[0];
         double roundOffX = Math.round(scaled_value * 100.0) / 100.0;
 
-        if(scaled_value < 20 && scaled_value > -20){
-            FileOutputStream outputStream;
-
-            try {
-                outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
-                outputStream.write(String.valueOf(roundOffX).getBytes());
-                outputStream.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
 
         if( scaled_value < 1.5 && scaled_value > -1.5){
             scaled_value = 0;
         }
 
         // Update the UI with the results from gyroscope
-        gyroText.setText("X :" + sensorEvent.values[0] + "\n\nY : " + sensorEvent.values[1] + "\n\nZ : " + sensorEvent.values[2]);
+
+
+        if(scaled_value < 20 && scaled_value > -20) {
+
+            if(recordData) {
+                j++;
+
+                if((j % 2) == 0) {
+                    FileOutputStream outputStream;
+
+                    try {
+                        outputStream = openFileOutput(filename, Context.MODE_APPEND);
+                        outputStream.write(String.valueOf(roundOffX).getBytes());
+                        outputStream.write("\n".getBytes());
+                        outputStream.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                if(j > 1000){
+                    j = 0;
+                }
+
+            }
+          /*  try {
+                ++aaa;
+                String data1 = Double.toString(roundOffX);
+
+                File file = new File(filename);
+
+                //if file doesn't exists, then create it
+                if (!file.exists()) {
+                    file.createNewFile();
+                    aaa=-1;
+                }
+
+                //true = append file
+                if(aaa==-1) {
+                    FileWriter fileWritter = new FileWriter(file.getName(), true);
+                    BufferedWriter bufferWritter = new BufferedWriter(fileWritter);
+                    bufferWritter.write(","+data1);
+                    bufferWritter.close();
+                }
+                else {
+                    FileWriter fileWritter = new FileWriter(file.getName(), true);
+                    BufferedWriter bufferWritter = new BufferedWriter(fileWritter);
+                    bufferWritter.append(","+data1);
+                    bufferWritter.close();
+                }
+
+            }
+            catch(IOException e){
+                    e.printStackTrace();
+            }
+        }*/
+        }
+
+        gyroText.setText("X :" + sensorEvent.values[0] + "\nY : " + sensorEvent.values[1] + "\nZ : " + sensorEvent.values[2]);
+
+
         if (scaled_value < 20 && scaled_value > -20){
             Log.d("onSensorChanged",String.valueOf(scaled_value));
 
@@ -142,7 +218,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 }
             }
         }
-            // Writing to a file
+        // Writing to a file
     }
 
     @Override

@@ -15,7 +15,7 @@
         android:layout_width="wrap_content"
         android:id="@+id/gyro_text"
         android:layout_height="wrap_content"
-        android:textSize="24sp"
+        android:textSize="16sp"
         android:layout_margin="20dp"
         tools:text = "X : Y : Z :"/>
 
@@ -26,12 +26,36 @@
         android:layout_height="200dip"
         android:id="@+id/graph" />
 
-    <Button
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/record_data"
+        android:orientation="horizontal"
         android:layout_gravity="center_horizontal"
-        android:text="@string/record_data"/>
+        android:padding="20dp"
+        >
 
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/record_data"
+            android:text="@string/record_data"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/stop_record"
+            android:text="@string/stop"/>
+
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:id="@+id/display_text"
+        android:textSize="16sp"
+        android:text="Recording Data..."
+        android:visibility="invisible"/>
 
 </LinearLayout>
