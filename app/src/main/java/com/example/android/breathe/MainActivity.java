@@ -6,6 +6,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -18,6 +19,7 @@ import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
+import java.io.File;
 import java.io.FileOutputStream;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener{
@@ -33,6 +35,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private DataPoint[] data = new DataPoint[101];
     private int i = 0;
     private int j = 0;
+    File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+    File file = new File(path, filename);
 
     // Change this value to increase or decrease the sensitivity (This is multiplying factor)
     private static final double SCALER = (180.0/3.14);
@@ -156,7 +160,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     FileOutputStream outputStream;
 
                     try {
-                        outputStream = openFileOutput(filename, Context.MODE_APPEND);
+                        outputStream = openFileOutput(file.toString(), Context.MODE_APPEND);
                         outputStream.write(String.valueOf(roundOffX).getBytes());
                         outputStream.write("\n".getBytes());
                         outputStream.close();
@@ -170,37 +174,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 }
 
             }
-          /*  try {
-                ++aaa;
-                String data1 = Double.toString(roundOffX);
-
-                File file = new File(filename);
-
-                //if file doesn't exists, then create it
-                if (!file.exists()) {
-                    file.createNewFile();
-                    aaa=-1;
-                }
-
-                //true = append file
-                if(aaa==-1) {
-                    FileWriter fileWritter = new FileWriter(file.getName(), true);
-                    BufferedWriter bufferWritter = new BufferedWriter(fileWritter);
-                    bufferWritter.write(","+data1);
-                    bufferWritter.close();
-                }
-                else {
-                    FileWriter fileWritter = new FileWriter(file.getName(), true);
-                    BufferedWriter bufferWritter = new BufferedWriter(fileWritter);
-                    bufferWritter.append(","+data1);
-                    bufferWritter.close();
-                }
-
-            }
-            catch(IOException e){
-                    e.printStackTrace();
-            }
-        }*/
         }
 
         gyroText.setText("X :" + sensorEvent.values[0] + "\nY : " + sensorEvent.values[1] + "\nZ : " + sensorEvent.values[2]);
@@ -218,7 +191,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 }
             }
         }
-        // Writing to a file
     }
 
     @Override
