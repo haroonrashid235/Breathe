@@ -141,12 +141,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
 
         double scaled_value = SCALER * sensorEvent.values[0];
-        double roundOffX = Math.round(scaled_value * 100.0) / 100.0;
-
-
         if( scaled_value < 1.5 && scaled_value > -1.5){
             scaled_value = 0;
         }
+        double roundOffX = Math.round(scaled_value * 100.0) / 100.0;
+
 
         // Update the UI with the results from gyroscope
 
